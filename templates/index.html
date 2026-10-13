@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eef5f0">
+  <title>Secure File Encryption and Decryption System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}" aria-label="Secure files home">
+      <span class="brand-mark" aria-hidden="true">S</span>
+      <span>SECURE<span class="brand-light">FILES</span></span>
+    </a>
+    <span class="topbar-note"><span class="status-dot"></span> PRIVATE WORKSPACE</span>
+  </header>
+
+  <main class="container app-shell">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">FILE SECURITY <span> / </span> AES-256-GCM</p>
+      <h1 id="page-title">Secure File Encryption<br class="desktop-break"> and Decryption System</h1>
+      <div class="intro-rule"><span></span><span></span><span></span></div>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="alerts" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="alert-message alert-{{ category }}" role="status">
+              <span class="alert-symbol" aria-hidden="true">{{ '✓' if category == 'success' else '!' }}</span>
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if download_url %}
+      <section class="download-ready" aria-label="Download ready">
+        <div class="download-copy">
+          <span class="download-kicker">READY TO SAVE</span>
+          <strong>{{ download_name }}</strong>
+        </div>
+        <a class="download-button" href="{{ download_url }}" download>
+          <span>Download file</span><span aria-hidden="true">&#8599;</span>
+        </a>
+      </section>
+    {% endif %}
+
+    <section class="workspace" aria-label="File operations">
+      <article class="operation operation-encrypt">
+        <div class="operation-head">
+          <span class="operation-index">01</span>
+          <span class="operation-tag">LOCK</span>
+        </div>
+        <h2>Encrypt a file</h2>
+        <p class="operation-meta">Create a password-protected <code>.enc</code> file</p>
+        <form action="{{ url_for('encrypt') }}" method="post" enctype="multipart/form-data">
+          <label class="field-label" for="encrypt-file">FILE</label>
+          <input class="form-control file-input" id="encrypt-file" name="file" type="file" required>
+
+          <label class="field-label password-label" for="encrypt-password">PASSWORD</label>
+          <input class="form-control password-input" id="encrypt-password" name="password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" placeholder="At least 12 characters" required>
+
+          <div class="form-foot">
+            <span>MAX FILE SIZE <b>25 MB</b></span>
+            <button class="action-button" type="submit">Encrypt file <span aria-hidden="true">&#8594;</span></button>
+          </div>
+        </form>
+      </article>
+
+      <article class="operation operation-decrypt">
+        <div class="operation-head">
+          <span class="operation-index">02</span>
+          <span class="operation-tag">UNLOCK</span>
+        </div>
+        <h2>Decrypt a file</h2>
+        <p class="operation-meta">Restore a file with its original password</p>
+        <form action="{{ url_for('decrypt') }}" method="post" enctype="multipart/form-data">
+          <label class="field-label" for="decrypt-file">ENCRYPTED FILE</label>
+          <input class="form-control file-input" id="decrypt-file" name="file" type="file" required>
+
+          <label class="field-label password-label" for="decrypt-password">PASSWORD</label>
+          <input class="form-control password-input" id="decrypt-password" name="password" type="password" maxlength="1024" autocomplete="current-password" placeholder="Enter encryption password" required>
+
+          <div class="form-foot">
+            <span>AUTHENTICATED <b>AES-GCM</b></span>
+            <button class="action-button" type="submit">Decrypt file <span aria-hidden="true">&#8594;</span></button>
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <footer class="page-footer">
+      <span>ENCRYPTION KEYS ARE DERIVED PER FILE</span>
+      <span class="footer-mark">S<span>.</span>F</span>
+    </footer>
+  </main>
+</body>
+</html>
